@@ -2,13 +2,16 @@
 import {useContext, useState} from "react";
 import AuthContext from "@/context/AuthContext";
 import Web3Context from "@/context/Web3Context";
+import ProfileContext from "@/context/ProfileContext";
 import api from "@/lib/http";
+import Cookies from 'js-cookie'
 import {useRouter} from "next/navigation";
 
 const AuthSignUpPage = () => {
     const router = useRouter();
 
-    const {createSiweMessage, setIsAuthenticated} = useContext(AuthContext);
+    const {createSiweMessage, setIsAuthenticated, setAccessToken, } = useContext(AuthContext);
+    const {clearProfile, fetchAndSetProfile} = useContext(ProfileContext)
     const {connect, clearWeb3Context, wallet, signMessage} = useContext(Web3Context);
     const [isLoading, setIsLoading] = useState(false);
 
@@ -53,10 +56,16 @@ const AuthSignUpPage = () => {
                     username: formUsername,
                     address: wallet.address,
                 });
-                const result = response.data;
+                console.log(response.data)
+                const result = response.data.user;
                 if (result.id) {
                     setSuccess('Signup successful');
                     setIsAuthenticated(true);
+                    const accessToken = response.data.accessToken;
+                    Cookies.set("refresh_token",response.data.refreshToken);
+                    setAccessToken(accessToken);
+                    setIsAuthenticated(true);
+                    await fetchAndSetProfile(accessToken);
                   await router.push("/profile/me");
                 } else {
                     setError('Signup failed' + result.message);
@@ -85,6 +94,7 @@ const AuthSignUpPage = () => {
     const onLogoutClick = async () => {
         await clearWeb3Context();
         setIsAuthenticated(false);
+        clearProfile()
     };
 
     return (

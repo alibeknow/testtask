@@ -114,7 +114,10 @@ export class AuthService {
             })
         )
     }
-    async signup(props: SignupProps, options?: SaveOptions): Promise<User> {
+    async signup(
+        props: SignupProps,
+        options?: SaveOptions
+    ): Promise<{user: User; accessToken: string; refreshToken: string}> {
         const userProps = {
             username: '',
             address: '',
@@ -126,7 +129,20 @@ export class AuthService {
         if (props?.address) userProps.address = props.address
 
         try {
-            return await this.userRepository.save(userProps, options)
+            const user = await this.userRepository.save(userProps, options)
+            const payload = {
+                sub: user.id,
+                role: user.role,
+                username: user.username,
+                address: user.address
+            }
+            const accessToken = this.jwtService.sign(payload, {
+                expiresIn: '5s'
+            })
+            const refreshToken = this.jwtService.sign(payload, {
+                expiresIn: '7d'
+            })
+            return {accessToken, refreshToken, user}
         } catch (e) {
             if (e.code === 'SQLITE_CONSTRAINT') {
                 throw new RpcException(

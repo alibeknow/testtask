@@ -5,6 +5,7 @@ import Web3Context from "@/context/Web3Context";
 import ProfileContext from "@/context/ProfileContext";
 import api from "@/lib/http";
 import { useRouter } from "next/navigation";
+import Cookies from "js-cookie"
 
 const NEXT_PUBLIC_API_URL = process.env.NEXT_PUBLIC_API_URL;
 const AuthSignInPage = () => {
@@ -40,8 +41,8 @@ const AuthSignInPage = () => {
             if (response.data.success) {
                 setIsLoading(false)
                 const accessToken = response.data.accessToken;
+                Cookies.set("refresh_token",response.data.refreshToken);
                 setAccessToken(accessToken);
-                // Cookies.set('access_token', response.data.accessToken, {expires: 1 / 24});
                 setIsAuthenticated(true);
                 await fetchAndSetProfile(accessToken);
                 await router.push('/profile/me')

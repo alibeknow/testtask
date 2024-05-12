@@ -57,6 +57,7 @@ export class SiweService {
 
                 try {
                     const verifyResult = await message.verify({signature})
+                    await this.cacheService.delete(nonce)
                     return {success: verifyResult.success}
                 } catch (e) {
                     throw new RpcException(e)
