@@ -1,0 +1,50 @@
+version: '3.7'
+
+services:
+    auth:
+        container_name: auth
+        restart: on-failure
+        build:
+            context: .
+            dockerfile: ./apps/auth/Dockerfile
+        volumes:
+            - .:/usr/src/app
+        ports:
+            - 8850:8850
+            - 8851:8851
+        command: npm run start:auth:dev
+        cpus: 0.1
+        mem_limit: 256M
+
+    gateway:
+        restart: on-failure
+        build:
+            context: .
+            dockerfile: ./apps/gateway/Dockerfile
+        volumes:
+            - .:/usr/src/app
+        ports:
+            - 8880:8880
+        command: npm run start:gateway:dev
+        deploy:
+            mode: replicated
+            replicas: 1
+        cpus: 0.1
+        mem_limit: 256M
+
+    siwe:
+        restart: on-failure
+        build:
+            context: .
+            dockerfile: ./apps/siwe/Dockerfile
+        volumes:
+            - .:/usr/src/app
+        ports:
+            - 8861:8861
+            - 8860:8860
+        command: npm run start:siwe:dev
+        deploy:
+            mode: replicated
+            replicas: 1
+        cpus: 0.1
+        mem_limit: 256M

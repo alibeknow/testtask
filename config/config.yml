@@ -1,0 +1,45 @@
+auth:
+    jwt:
+        secret: 'mysupersecret'
+    database:
+        path: '.db'
+    tcp:
+        enable: true
+        port: 8850
+    http:
+        hostname: 'http://localhost:8851'
+        enable: true
+        port: 8851
+    siwe:
+        host: localhost
+        port: 8860
+    environment_name: 'development'
+
+gateway:
+    auth:
+        host: 'localhost'
+        port: 8850
+    http:
+        port: 8880
+    siwe:
+        host: localhost
+        port: 8860
+    jwt:
+        secret: 'mysupersecret'
+    environment_name: 'development'
+
+siwe:
+    auth:
+        host: 'localhost'
+        port: 8850
+    jwt:
+        secret: 'mysupersecret'
+    http:
+        enable: true
+        port: 8861
+    tcp:
+        enable: true
+        port: 8860
+    cache:
+        ttl: 60000
+        max_counts: 1000
